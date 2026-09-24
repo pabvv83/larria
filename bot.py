@@ -158,7 +158,7 @@ async def on_member_join(member):
         f"> 📑 >>> Leia as regras do servidor.\n\n"
         f"```python\n"
         f"if member.is_new():\n"
-        f"    print(\"Larria diz: fique à vontade.\")\n"
+        f"    print(\"Larria diz: a teia já sabe que você chegou.\")\n"
         f"```\n"
         f"```ini\n"
         f"-----------------------------------------\n"
@@ -191,7 +191,7 @@ async def on_member_remove(member):
         f"> Até a próxima, {member.display_name}. Ou não.\n\n"
         f"```python\n"
         f"if member.left():\n"
-        f"    print(\"Larria diz: a porta é ali.\")\n"
+        f"    print(\"Larria diz: a porta é ali. A teia não sente saudade.\")\n"
         f"```\n"
         f"```ini\n"
         f"-----------------------------------------\n"
@@ -222,7 +222,7 @@ async def on_message(message):
 async def kick(ctx, member: discord.Member, *, motivo="Falta de aura."):
     await member.kick(reason=motivo)
     await log_status(f"👢 **KICK:** {member.name} (ID: {member.id}) por {ctx.author.name}. Motivo: {motivo}")
-    await ctx.send(f"👢 **{member.display_name}** teve que dar no delta! Motivo: {motivo}")
+    await ctx.send(f"🕷️ **{member.display_name}** foi caçado, esperamos nunca mais te ver. Motivo: {motivo}")
 
 @bot.slash_command(name="kick", description="Expulsa um membro do servidor")
 @commands.has_permissions(kick_members=True)
@@ -234,7 +234,7 @@ async def slash_kick(ctx: discord.ApplicationContext, membro: discord.Member, mo
 async def ban(ctx, member: discord.Member, *, motivo="Se graduou no banimento."):
     await member.ban(reason=motivo)
     await log_status(f"⚖️ **BAN:** {member.name} (ID: {member.id}) por {ctx.author.name}. Motivo: {motivo}")
-    await ctx.send(f"⚖️ **{member.display_name}** se graduou e perdeu -1.000 de aura! {EMOJIS['rage']}")
+    await ctx.send(f"⚖️ **{member.display_name}** foi banido. A teia não perdoa. Motivo: {motivo} {EMOJIS['rage']}")
 
 @bot.slash_command(name="ban", description="Bane um membro permanentemente")
 @commands.has_permissions(ban_members=True)
@@ -268,10 +268,10 @@ async def slash_unban(ctx: discord.ApplicationContext, user_id: str):
 @commands.has_permissions(manage_messages=True)
 async def clear(ctx, quantidade: int):
     if quantidade <= 0:
-        return await ctx.send("Como vou limpar 0 mensagens? Ta bebendo água de ar condicionado?")
+        return await ctx.send("Como vou devorar 0 mensagens? Ta bebendo água de ar condicionado?")
     deleted = await ctx.channel.purge(limit=quantidade + 1)
     await log_status(f"🧹 **CLEAR:** {len(deleted)-1} mensagens limpas por {ctx.author.name} em #{ctx.channel.name}")
-    await ctx.send(f"🧹 Aura purificada! {len(deleted)-1} mensagens deletadas.", delete_after=5)
+    await ctx.send(f"🕸️ Mensagens devoradas. O acervo está limpo. ({len(deleted)-1} apagadas)", delete_after=5)
 
 @bot.slash_command(name="clear", description="Limpa N mensagens do canal")
 @commands.has_permissions(manage_messages=True)
@@ -345,7 +345,8 @@ async def sobre(ctx):
         title="ℹ️ Sobre a Larria",
         description=(
             "A **Larria** é um bot de administração de servidores, "
-            "criada por **@pabvv83** para o servidor **Biblioteca Ananse**."
+            "criada por **@pabvv83** para o servidor **Biblioteca Ananse**.\n\n"
+            "🕸️ discord.gg/DHGavQmwrv"
         ),
         color=0x7000FF
     )
@@ -445,18 +446,20 @@ async def aura(ctx, alvo: discord.Member = None):
     alvo = alvo or ctx.author
     valor = random.randint(0, 100)
 
+    intro = f"{EMOJIS['think']} A Larria mede sua aura... e não gostou do resultado.\n"
+
     if valor == 100:
-        msg = f"{EMOJIS['aura']} **{alvo.mention} farma muita aura!** {EMOJIS['aura']}\n> `AURA: {valor}%` — LENDÁRIO."
+        msg = f"{intro}{EMOJIS['aura']} **{alvo.mention}** — surpreendentemente, nem ela esperava isso.\n> `AURA: {valor}%` — LENDÁRIO."
     elif valor >= 75:
-        msg = f"{EMOJIS['aura']} **{alvo.mention}** tá bem de aura.\n> `AURA: {valor}%`"
+        msg = f"{intro}{EMOJIS['aura']} **{alvo.mention}** — aceitável. Por enquanto.\n> `AURA: {valor}%`"
     elif valor >= 50:
-        msg = f"**{alvo.mention}** sobreviveu. Por enquanto.\n> `AURA: {valor}%`"
+        msg = f"{intro}**{alvo.mention}** sobreviveu à análise. Mal.\n> `AURA: {valor}%`"
     elif valor >= 25:
-        msg = f"**{alvo.mention}** tá na zona de risco de virar neandertal.\n> `AURA: {valor}%` {EMOJIS['laugh']}"
+        msg = f"{intro}**{alvo.mention}** está sendo observado(a) com pena.\n> `AURA: {valor}%` {EMOJIS['laugh']}"
     elif valor == 0:
-        msg = f"{EMOJIS['rage']} **{alvo.mention} anda farmando muita aura de neandertal...**\n> `AURA: {valor}%` — CRÍTICO."
+        msg = f"{intro}{EMOJIS['rage']} **{alvo.mention}** — a Larria só balançou a cabeça e anotou o nome.\n> `AURA: {valor}%` — CRÍTICO."
     else:
-        msg = f"**{alvo.mention}** tá precisando treinar mais.\n> `AURA: {valor}%` {EMOJIS['rage']}"
+        msg = f"{intro}**{alvo.mention}** — decepcionante, mas previsível.\n> `AURA: {valor}%` {EMOJIS['rage']}"
 
     await ctx.send(msg)
 
@@ -468,38 +471,24 @@ async def slash_aura(ctx: discord.ApplicationContext, alvo: discord.Member = Non
 async def d20(ctx):
     resultado = random.randint(1, 20)
 
+    intro = f"🎲 O dado rolou. A Larria observa.\n"
+
     if resultado == 20:
-        msg = f"🎲 O dado deu **20**! Crítico! {EMOJIS['aura']}"
+        msg = f"{intro}> **{resultado}**. Até ela se surpreendeu. {EMOJIS['aura']}"
     elif resultado == 1:
-        msg = f"🎲 O dado deu **1**. Falha crítica. Que vergonha, {ctx.author.mention}. {EMOJIS['laugh']}"
+        msg = f"{intro}> **{resultado}**. Patético, {ctx.author.mention}. Ela já esperava. {EMOJIS['laugh']}"
     elif resultado >= 15:
-        msg = f"🎲 O dado deu **{resultado}**. Bom resultado."
+        msg = f"{intro}> **{resultado}**. Aceitável. Não se acostume."
     elif resultado >= 8:
-        msg = f"🎲 O dado deu **{resultado}**. Mediano, como esperado."
+        msg = f"{intro}> **{resultado}**. Mediano, como tudo em você."
     else:
-        msg = f"🎲 O dado deu **{resultado}**. Tá ruim pra você. {EMOJIS['rage']}"
+        msg = f"{intro}> **{resultado}**. Ela não está impressionada. {EMOJIS['rage']}"
 
     await ctx.send(msg)
 
 @bot.slash_command(name="d20", description="Rola um dado de 20 lados")
 async def slash_d20(ctx: discord.ApplicationContext):
     await d20(ctx)
-
-@bot.command(name="path")
-async def lifepath(ctx, alvo: discord.Member = None):
-    alvo = alvo or ctx.author
-    escolha = random.choice(["Nomad", "Street Kid", "Corpo"])
-
-    descricoes = {
-        "Nomad": f"{EMOJIS['aura']} **{alvo.mention}** rola um Life Path: **Nomad**.\n> Cresceu na estrada, longe das megacorps. Família é tudo — sangue ou não.",
-        "Street Kid": f"{EMOJIS['laugh']} **{alvo.mention}** rola um Life Path: **Street Kid**.\n> Nasceu e se criou nas ruas. Conhece Night City melhor que a própria cara.",
-        "Corpo": f"{EMOJIS['soviet']} **{alvo.mention}** rola um Life Path: **Corpo**.\n> Formado dentro de uma corporação. Ambição e traição no sangue.",
-    }
-    await ctx.send(descricoes[escolha])
-
-@bot.slash_command(name="path", description="Sorteia um Life Path do universo Cyberpunk")
-async def slash_path(ctx: discord.ApplicationContext, alvo: discord.Member = None):
-    await lifepath(ctx, alvo)
 
 # ================== AJUDA ==================
 @bot.command(name="ajuda")
@@ -508,7 +497,7 @@ async def ajuda(ctx):
     embed.add_field(name="🛡️ Moderação", value="`!kick`, `!ban`, `!unban [ID]`, `!clear [N]`, `!automod` (ADM)", inline=False)
     embed.add_field(name="⚙️ Config", value="`!prefixo` (ADM), `!setwelcome` (ADM), `!status`", inline=False)
     embed.add_field(name="🌆 Servidor", value="`!serverinfo`, `!userinfo [@user]`, `!avatar`, `!uptime`", inline=True)
-    embed.add_field(name="🎲 Diversão", value="`!aura [@user]`, `!d20`, `!path [@user]`", inline=True)
+    embed.add_field(name="🎲 Diversão", value="`!aura [@user]`, `!d20`", inline=True)
     embed.add_field(name="ℹ️ Outros", value="`!sobre`", inline=True)
     embed.set_footer(text="Larria — Todos os comandos disponíveis também como /slash")
     await ctx.send(embed=embed)
