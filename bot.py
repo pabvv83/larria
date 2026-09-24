@@ -204,7 +204,7 @@ async def on_member_remove(member):
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(status=discord.Status.idle, activity=discord.CustomActivity(name="Use !ajuda ✨"))
+    await bot.change_presence(status=discord.Status.idle, activity=discord.CustomActivity(name="🕷️ > !sobre "))
     await log_status(f"Larria **v1.0** ONLINE! Latência: {round(bot.latency * 1000)}ms")
     print(f'✅ Larria v1.0 Online como {bot.user}')
 
